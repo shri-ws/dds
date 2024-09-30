@@ -11,6 +11,7 @@
 </head>
 <body>
 
+    
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <div class="container">
@@ -37,7 +38,59 @@
     </div>
 </nav>
 
-<!-- Home Section with Slideshow -->
+    <!-- Slideshow Section -->
+<section id="home" class="d-flex align-items-center text-white text-center slideshow">
+    <div class="container">
+        <h1>Google Drive Slideshow</h1>
+        <p>Fetching images from Google Drive...</p>
+    </div>
+</section>
+
+<!-- JavaScript to Fetch and Display Images -->
+<script>
+    const folderId = 'YOUR_GOOGLE_DRIVE_FOLDER_ID'; // Replace with your actual folder ID
+    const apiKey = 'YOUR_GOOGLE_API_KEY'; // Replace with your Google API key
+
+    const imageLinks = [];
+    const homeSection = document.querySelector('#home');
+
+    // Function to fetch images from Google Drive folder using API
+    async function fetchImages() {
+        const response = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType)`);
+        const data = await response.json();
+
+        // Filter only image files
+        const imageFiles = data.files.filter(file => file.mimeType.includes('image'));
+
+        // Generate direct links for each image
+        imageFiles.forEach(file => {
+            const imageLink = `https://drive.google.com/uc?export=view&id=${file.id}`;
+            imageLinks.push(imageLink);
+        });
+
+        startSlideshow();
+    }
+
+    let currentImageIndex = 0;
+
+    function startSlideshow() {
+        if (imageLinks.length > 0) {
+            changeBackground();
+            setInterval(changeBackground, 5000); // Change image every 5 seconds
+        } else {
+            console.error('No images found in the Google Drive folder.');
+        }
+    }
+
+    function changeBackground() {
+        homeSection.style.backgroundImage = `url(${imageLinks[currentImageIndex]})`;
+        currentImageIndex = (currentImageIndex + 1) % imageLinks.length;
+    }
+
+    // Fetch images from Google Drive folder on page load
+    fetchImages();
+</script>
+<!-- Home Section with Slideshow 
 <section id="home" class="d-flex align-items-center vh-100 text-white text-center slideshow">
     <div class="container">
         <h1>Welcome to Dhwani Dance School</h1>
@@ -45,7 +98,7 @@
         <a href="#classes" class="btn btn-light mt-4">Explore Our Classes</a>
     </div>
 </section>
-
+-->
 <!-- About Section -->
 <section id="about" class="py-5">
     <div class="container">
